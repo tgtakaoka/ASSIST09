@@ -1,5 +1,5 @@
-      TTL     ASSIST09 - MC6809 MONITOR
-      OPT     ABS,LLE=85,S,CRE
+      ;TTL     ASSIST09 - MC6809 MONITOR
+      ;OPT     ABS,LLE=85,S,CRE
 
 ; *************************************
 ; * COPYRIGHT (C) MOTOROLA, INC. 1979 *
