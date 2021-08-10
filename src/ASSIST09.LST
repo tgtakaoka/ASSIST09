@@ -18,11 +18,11 @@
       18/       0 :                    *         GLOBAL MODULE EQUATES
       19/       0 :                    ********************************************
       20/       0 : =F800              ROMBEG EQU    $F800    ; ROM START ASSEMBLY ADDRESS
-      21/       0 : =FFFFE700          RAMOFS EQU    -$1900   ; ROM OFFSET TO RAM WORK PAGE
+      21/       0 : =FFFFF700          RAMOFS EQU    -$0900   ; ROM OFFSET TO RAM WORK PAGE
       22/       0 : =800               ROMSIZ EQU    2048     ; ROM SIZE
       23/       0 : =F000              ROM2OF EQU    ROMBEG-ROMSIZ ; START OF EXTENSION ROM
-      24/       0 : =E008              ACIA   EQU    $E008    ; DEFAULT ACIA ADDRESS
-      25/       0 : =E000              PTM    EQU    $E000    ; DEFAULT PTM ADDRESS
+      24/       0 : =DF00              ACIA   EQU    $DF00    ; DEFAULT ACIA ADDRESS
+      25/       0 : =0                 PTM    EQU    $0000    ; DEFAULT PTM ADDRESS
       26/       0 : =0                 DFTCHP EQU    0        ; DEFAULT CHARACTER PAD COUNT
       27/       0 : =5                 DFTNLP EQU    5        ; DEFAULT NEW LINE PAD COUNT
       28/       0 : =3E                PROMPT EQU    '>       ; PROMPT CHARACTER
@@ -39,12 +39,12 @@
       39/       0 : =10                DLE    EQU    $10      ; DATA LINE ESCAPE
       40/       0 : =18                CAN    EQU    $18      ; CANCEL (CTRL-X)
       41/       0 :                    * PTM ACCESS DEFINITIONS
-      42/       0 : =E001              PTMSTA EQU    PTM+1    ; READ STATUS REGISTER
-      43/       0 : =E000              PTMC13 EQU    PTM      ; CONTROL REGISTER 1 AND 3
-      44/       0 : =E001              PTMC2  EQU    PTM+1    ; CONTROL REGISTER 2
-      45/       0 : =E002              PTMTM1 EQU    PTM+2    ; LATCH 1
-      46/       0 : =E004              PTMTM2 EQU    PTM+4    ; LATCH 2
-      47/       0 : =E006              PTMTM3 EQU    PTM+6    ; LATCH 3
+      42/       0 : =1                 PTMSTA EQU    PTM+1    ; READ STATUS REGISTER
+      43/       0 : =0                 PTMC13 EQU    PTM      ; CONTROL REGISTER 1 AND 3
+      44/       0 : =1                 PTMC2  EQU    PTM+1    ; CONTROL REGISTER 2
+      45/       0 : =2                 PTMTM1 EQU    PTM+2    ; LATCH 1
+      46/       0 : =4                 PTMTM2 EQU    PTM+4    ; LATCH 2
+      47/       0 : =6                 PTMTM3 EQU    PTM+6    ; LATCH 3
       48/       0 :
       49/       0 : =8C                SKIP2  EQU    $8C      ; "CMPX #" OPCODE - SKIPS TWO BYTES
       50/       0 :
@@ -108,63 +108,63 @@
      108/       0 :                    * INITIALLY STARTS UNDER THE RESERVED WORK AREAS AS
      109/       0 :                    * DEFINED HEREIN.
      110/       0 :                    ******************************************
-     111/       0 : =DF00              WORKPG EQU    ROMBEG+RAMOFS ; SETUP DIRECT PAGE ADDRESS
+     111/       0 : =EF00              WORKPG EQU    ROMBEG+RAMOFS ; SETUP DIRECT PAGE ADDRESS
      112/       0 :                           SETDP  WORKPG!>8 ; NOTIFY ASSEMBLER
-     113/    E000 :                           ORG    WORKPG+256 ; READY PAGE DEFINITIONS
-     114/    E000 :                    * THE FOLLOWING THRU BKPTOP MUST RESIDE IN THIS ORDER
-     115/    E000 :                    * FOR PROPER INITIALIZATION
-     116/    DFFC :                           ORG    *-4
-     117/    DFFC : =DFFC              PAUSER EQU    *        ; PAUSE ROUTINE
-     118/    DFFB :                           ORG    *-1
-     119/    DFFB : =DFFB              SWIBFL EQU    *        ; BYPASS SWI AS BREAKPOINT FLAG
-     120/    DFFA :                           ORG    *-1
-     121/    DFFA : =DFFA              BKPTCT EQU    *        ; BREAKPOINT COUNT
-     122/    DFF8 :                           ORG    *-2
-     123/    DFF8 : =DFF8              SLEVEL EQU    *        ; STACK TRACE LEVEL
-     124/    DFC2 :                           ORG    *-NUMVTR*2
-     125/    DFC2 : =DFC2              VECTAB EQU    *        ; VECTOR TABLE
-     126/    DFB2 :                           ORG    *-2*NUMBKP
-     127/    DFB2 : =DFB2              BKPTBL EQU    *        ; BREAKPOINT TABLE
-     128/    DFA2 :                           ORG    *-2*NUMBKP
-     129/    DFA2 : =DFA2              BKPTOP EQU    *        ; BREAKPOINT OPCODE TABLE
-     130/    DFA0 :                           ORG    *-2
-     131/    DFA0 : =DFA0              WINDOW EQU    *        ; WINDOW
-     132/    DF9E :                           ORG    *-2
-     133/    DF9E : =DF9E              ADDR   EQU    *        ; ADDRESS POINTER VALUE
-     134/    DF9D :                           ORG    *-1
-     135/    DF9D : =DF9D              BASEPG EQU    *        ; BASE PAGE VALUE
-     136/    DF9B :                           ORG    *-2
-     137/    DF9B : =DF9B              NUMBER EQU    *        ; BINARY BUILD AREA
-     138/    DF99 :                           ORG    *-2
-     139/    DF99 : =DF99              LASTOP EQU    *        ; LAST OPCODE TRACED
-     140/    DF97 :                           ORG    *-2
-     141/    DF97 : =DF97              RSTACK EQU    *        ; RESET STACK POINTER
-     142/    DF95 :                           ORG    *-2
-     143/    DF95 : =DF95              PSTACK EQU    *        ; COMMAND RECOVERY STACK
-     144/    DF93 :                           ORG    *-2
-     145/    DF93 : =DF93              PCNTER EQU    *        ; LAST PROGRAM COUNTER
-     146/    DF91 :                           ORG    *-2
-     147/    DF91 : =DF91              TRACEC EQU    *        ; TRACE COUNT
-     148/    DF90 :                           ORG    *-1
-     149/    DF90 : =DF90              SWICNT EQU    *        ; TRACE "SWI" NEST LEVEL COUNT
-     150/    DF8F :                           ORG    *-1      ; (MISFLG MUST FOLLOW SWICNT)
-     151/    DF8F : =DF8F              MISFLG EQU    *        ; LOAD CMD/THRU BREAKPOINT FLAG
-     152/    DF8E :                           ORG    *-1
-     153/    DF8E : =DF8E              DELIM  EQU    *        ; EXPRESSION DELIMITER/WORK BYTE
-     154/    DF66 :                           ORG    *-40
-     155/    DF66 : =DF66              ROM2WK EQU    *        ; EXTENSION ROM RESERVED AREA
-     156/    DF51 :                           ORG    *-21
-     157/    DF51 : =DF51              TSTACK EQU    *        ; TEMPORARY STACK HOLD
-     158/    DF51 : =DF51              STACK  EQU    *        ; START OF INITIAL STACK
-     159/    DF51 :
-     160/    DF51 :
-     161/    DF51 :                    ******************************************
-     162/    DF51 :                    * DEFAULT THE ROM BEGINNING ADDRESS TO 'ROMBEG'
-     163/    DF51 :                    * ASSIST09 IS POSITION ADDRESS INDEPENDENT HOWEVER
-     164/    DF51 :                    * WE ASSEMBLE ASSUMING CONTROL OF THE HARDWARE VECTORS.
-     165/    DF51 :                    * NOTE THAT THE WORK RAM PAGE MUST BE 'RAMOFS'
-     166/    DF51 :                    * FROM THE ROM BEGINNING ADDRESS.
-     167/    DF51 :                    ********************************************
+     113/    F000 :                           ORG    WORKPG+256 ; READY PAGE DEFINITIONS
+     114/    F000 :                    * THE FOLLOWING THRU BKPTOP MUST RESIDE IN THIS ORDER
+     115/    F000 :                    * FOR PROPER INITIALIZATION
+     116/    EFFC :                           ORG    *-4
+     117/    EFFC : =EFFC              PAUSER EQU    *        ; PAUSE ROUTINE
+     118/    EFFB :                           ORG    *-1
+     119/    EFFB : =EFFB              SWIBFL EQU    *        ; BYPASS SWI AS BREAKPOINT FLAG
+     120/    EFFA :                           ORG    *-1
+     121/    EFFA : =EFFA              BKPTCT EQU    *        ; BREAKPOINT COUNT
+     122/    EFF8 :                           ORG    *-2
+     123/    EFF8 : =EFF8              SLEVEL EQU    *        ; STACK TRACE LEVEL
+     124/    EFC2 :                           ORG    *-NUMVTR*2
+     125/    EFC2 : =EFC2              VECTAB EQU    *        ; VECTOR TABLE
+     126/    EFB2 :                           ORG    *-2*NUMBKP
+     127/    EFB2 : =EFB2              BKPTBL EQU    *        ; BREAKPOINT TABLE
+     128/    EFA2 :                           ORG    *-2*NUMBKP
+     129/    EFA2 : =EFA2              BKPTOP EQU    *        ; BREAKPOINT OPCODE TABLE
+     130/    EFA0 :                           ORG    *-2
+     131/    EFA0 : =EFA0              WINDOW EQU    *        ; WINDOW
+     132/    EF9E :                           ORG    *-2
+     133/    EF9E : =EF9E              ADDR   EQU    *        ; ADDRESS POINTER VALUE
+     134/    EF9D :                           ORG    *-1
+     135/    EF9D : =EF9D              BASEPG EQU    *        ; BASE PAGE VALUE
+     136/    EF9B :                           ORG    *-2
+     137/    EF9B : =EF9B              NUMBER EQU    *        ; BINARY BUILD AREA
+     138/    EF99 :                           ORG    *-2
+     139/    EF99 : =EF99              LASTOP EQU    *        ; LAST OPCODE TRACED
+     140/    EF97 :                           ORG    *-2
+     141/    EF97 : =EF97              RSTACK EQU    *        ; RESET STACK POINTER
+     142/    EF95 :                           ORG    *-2
+     143/    EF95 : =EF95              PSTACK EQU    *        ; COMMAND RECOVERY STACK
+     144/    EF93 :                           ORG    *-2
+     145/    EF93 : =EF93              PCNTER EQU    *        ; LAST PROGRAM COUNTER
+     146/    EF91 :                           ORG    *-2
+     147/    EF91 : =EF91              TRACEC EQU    *        ; TRACE COUNT
+     148/    EF90 :                           ORG    *-1
+     149/    EF90 : =EF90              SWICNT EQU    *        ; TRACE "SWI" NEST LEVEL COUNT
+     150/    EF8F :                           ORG    *-1      ; (MISFLG MUST FOLLOW SWICNT)
+     151/    EF8F : =EF8F              MISFLG EQU    *        ; LOAD CMD/THRU BREAKPOINT FLAG
+     152/    EF8E :                           ORG    *-1
+     153/    EF8E : =EF8E              DELIM  EQU    *        ; EXPRESSION DELIMITER/WORK BYTE
+     154/    EF66 :                           ORG    *-40
+     155/    EF66 : =EF66              ROM2WK EQU    *        ; EXTENSION ROM RESERVED AREA
+     156/    EF51 :                           ORG    *-21
+     157/    EF51 : =EF51              TSTACK EQU    *        ; TEMPORARY STACK HOLD
+     158/    EF51 : =EF51              STACK  EQU    *        ; START OF INITIAL STACK
+     159/    EF51 :
+     160/    EF51 :
+     161/    EF51 :                    ******************************************
+     162/    EF51 :                    * DEFAULT THE ROM BEGINNING ADDRESS TO 'ROMBEG'
+     163/    EF51 :                    * ASSIST09 IS POSITION ADDRESS INDEPENDENT HOWEVER
+     164/    EF51 :                    * WE ASSEMBLE ASSUMING CONTROL OF THE HARDWARE VECTORS.
+     165/    EF51 :                    * NOTE THAT THE WORK RAM PAGE MUST BE 'RAMOFS'
+     166/    EF51 :                    * FROM THE ROM BEGINNING ADDRESS.
+     167/    EF51 :                    ********************************************
      168/    F800 :                           ORG    ROMBEG   ; ROM ASSEMBLY/DEFAULT ADDRESS
      169/    F800 :
      170/    F800 :                    *****************************************************
@@ -180,7 +180,7 @@
      180/    F800 :                    *         THE VECTOR TABLE AND DEFAULTS ARE INITIALIZED
      181/    F800 :                    *  ALL REGISTERS VOLATILE.
      182/    F800 :                    **************************************************
-     183/    F800 : 30 8D E7 BE        BLDVTR LEAX   VECTAB,PCR ; ADDRESS VECTOR TABLE
+     183/    F800 : 30 8D F7 BE        BLDVTR LEAX   VECTAB,PCR ; ADDRESS VECTOR TABLE
      184/    F804 : 1F 10                     TFR    X,D      ; OBTAIN BASE PAGE ADDRESS
      185/    F806 : 1F 8B                     TFR    A,DP     ; SETUP DPR
      186/    F808 : 97 9D                     STA    BASEPG   ; STORE FOR QUICK REFERENCE
@@ -214,7 +214,7 @@
      214/    F837 :                    *  TABLE, STACK, AND THE FIREUP THE MONITOR VIA SWI
      215/    F837 :                    *  CALL.
      216/    F837 :                    *****************************************************
-     217/    F837 : 32 8D E7 16        RESET  LEAS   STACK,PCR ; SETUP INITIAL STACK
+     217/    F837 : 32 8D F7 16        RESET  LEAS   STACK,PCR ; SETUP INITIAL STACK
      218/    F83B : 8D C3                     BSR    BLDVTR   ; BUILD VECTOR TABLE
      219/    F83D : 4F                 RESET2 CLRA            ; ISSUE STARTUP MESSAGE
      220/    F83E : 1F 8B                     TFR    A,DP     ; DEFAULT TO PAGE ZERO
@@ -249,14 +249,14 @@
      249/    F864 : 02 B7                     FDB    BSON-*   ; DEFAULT BSON
      250/    F866 : 02 D2                     FDB    BSDAT-*  ; DEFAULT BSDAT
      251/    F868 : 02 BF                     FDB    BSOFF-*  ; DEFAULT BSOFF
-     252/    F86A : E7 92                     FDB    PAUSER-* ; DEFAULT PAUSE ROUTINE
+     252/    F86A : F7 92                     FDB    PAUSER-* ; DEFAULT PAUSE ROUTINE
      253/    F86C : 04 7D                     FDB    EXP1-*   ; DEFAULT EXPRESSION ANALYZER
      254/    F86E : 01 2D                     FDB    CMDTB2-* ; DEFAULT SECOND COMMAND TABLE
      255/    F870 :                    * CONSTANTS
-     256/    F870 : E0 08              INTVS  FDB    ACIA     ; DEFAULT ACIA
+     256/    F870 : DF 00              INTVS  FDB    ACIA     ; DEFAULT ACIA
      257/    F872 : 00 05                     FCB    DFTCHP,DFTNLP ; DEFAULT NULL PADDS
      258/    F874 : 00 00                     FDB    0        ; DEFAULT ECHO
-     259/    F876 : E0 00                     FDB    PTM      ; DEFAULT PTM
+     259/    F876 : 00 00                     FDB    0        ; DEFAULT PTM
      260/    F878 : 00 00                     FDB    0        ; INITIAL STACK TRACE LEVEL
      261/    F87A : 00                        FCB    0        ; INITIAL BREAKPOINT COUNT
      262/    F87B : 00                        FCB    0        ; SWI BREAKPOINT LEVEL
@@ -293,7 +293,7 @@
      293/    F891 : 02 56                     FDB    ZBKPNT-SWIVTB ; BREAKPOINT
      294/    F893 : 01 D1                     FDB    ZPAUSE-SWIVTB ; TASK PAUSE
      295/    F895 :
-     296/    F895 : 6A 8D E6 F7        SWIR   DEC    SWICNT,PCR ; UP "SWI" LEVEL FOR TRACE
+     296/    F895 : 6A 8D F6 F7        SWIR   DEC    SWICNT,PCR ; UP "SWI" LEVEL FOR TRACE
      297/    F899 : 17 02 25                  LBSR   LDDP     ; SETUP PAGE AND VERIFY STACK
      298/    F89C :                    * CHECK FOR BREAKPOINT TRAP
      299/    F89C : EE 6A                     LDU    10,S     ; LOAD PROGRAM COUNTER
@@ -346,8 +346,8 @@
      345/    F8D2 : 10 DF 97           ZMONTR STS    RSTACK   ; SAVE FOR BAD STACK RECOVERY
      346/    F8D5 : 6D 61                     TST    1,S      ; ? INIT CONSOLE AND SEND MSG
      347/    F8D7 : 26 0D                     BNE    ZMONT2   ; BRANCH IF NOT
-     348/    F8D9 : AD 9D E6 F9               JSR    [VECTAB+.CION,PCR] ; READY CONSOLE INPUT
-     349/    F8DD : AD 9D E6 FB               JSR    [VECTAB+.COON,PCR] ; READY CONSOLE OUTPUT
+     348/    F8D9 : AD 9D F6 F9               JSR    [VECTAB+.CION,PCR] ; READY CONSOLE INPUT
+     349/    F8DD : AD 9D F6 FB               JSR    [VECTAB+.COON,PCR] ; READY CONSOLE OUTPUT
      350/    F8E1 : 30 8C E5                  LEAX   SIGNON,PCR ; READY SIGNON EYE-CATCHER
      351/    F8E4 : 3F                        SWI             ; PERFORM
      352/    F8E5 : 03                        FCB    PDATA    ; PRINT STRING
@@ -566,7 +566,7 @@
      565/    F9E8 : 19                        DAA             ; ADJUST
      566/    F9E9 : 89 40                     ADCA   #$40     ; PREPARE CHARACTER BITS
      567/    F9EB : 19                        DAA             ; ADJUST
-     568/    F9EC : 6E 9D E5 EE        SEND   JMP    [VECTAB+.CODTA,PCR] ; SEND TO OUT HANDLER
+     568/    F9EC : 6E 9D F5 EE        SEND   JMP    [VECTAB+.CODTA,PCR] ; SEND TO OUT HANDLER
      569/    F9F0 :
      570/    F9F0 : 8D E7              ZOT4HS BSR    ZOUT2H   ; CONVERT FIRST BYTE
      571/    F9F2 : 8D E5              ZOT2HS BSR    ZOUT2H   ; CONVERT BYTE TO HEX
@@ -722,8 +722,8 @@
      721/    FA6D : 39                        RTS             ; AND RETURN
      722/    FA6E :
      723/    FA6E :                    * SAVE MEMORY WITH JUMPS
-     724/    FA6E : 6E 9D E5 78        XQPAUS JMP    [VECTAB+.PAUSE,PCR] ; TO PAUSE ROUTINE
-     725/    FA72 : AD 9D E5 62        XQCIDT JSR    [VECTAB+.CIDTA,PCR] ; TO INPUT ROUTINE
+     724/    FA6E : 6E 9D F5 78        XQPAUS JMP    [VECTAB+.PAUSE,PCR] ; TO PAUSE ROUTINE
+     725/    FA72 : AD 9D F5 62        XQCIDT JSR    [VECTAB+.CIDTA,PCR] ; TO INPUT ROUTINE
      726/    FA76 : 84 7F                     ANDA   #$7F     ; STRIP PARITY
      727/    FA78 : 39                        RTS
      728/    FA79 :
@@ -750,7 +750,7 @@
      749/    FA90 : 3F                        SWI             ; SEND TO CONTINUE
      750/    FA91 : 02                        FCB    PDATA1   ; FUNCTION
      751/    FA92 : 09 8E                     ROL    DELIM    ; SAVE CARRY BIT
-     752/    FA94 : 30 8D E5 01               LEAX   LASTOP,PCR ; POINT TO LAST OP
+     752/    FA94 : 30 8D F5 01               LEAX   LASTOP,PCR ; POINT TO LAST OP
      753/    FA98 : 3F                        SWI             ; SEND OUT AS HEX
      754/    FA99 : 05                        FCB    OUT4HS   ; FUNCTION
      755/    FA9A : 8D 17                     BSR    REGPRS   ; FOLLOW MEMORY WITH REGISTERS
@@ -782,7 +782,7 @@
      781/    FABD :
      782/    FABD : 3F 07 20 04        ERRMSG FCB    '?,BELL,$20,EOT ; ERROR RESPONSE
      783/    FAC1 :
-     784/    FAC1 : E6 8D E4 D8        LDDP   LDB    BASEPG,PCR ; LOAD DIRECT PAGE HIGH BYTE
+     784/    FAC1 : E6 8D F4 D8        LDDP   LDB    BASEPG,PCR ; LOAD DIRECT PAGE HIGH BYTE
      785/    FAC5 : 1F 9B                     TFR    B,DP     ; SETUP DIRECT PAGE REGISTER
      786/    FAC7 : A1 63                     CMPA   3,S      ; ? IS STACK VALID
      787/    FAC9 : 27 25                     BEQ    RTS      ; YES RETURN
@@ -837,7 +837,7 @@
      836/    FAE6 : 86 03              COON   LDA    #3       ; RESET ACIA CODE
      837/    FAE8 : 9E F0                     LDX    VECTAB+.ACIA ; LOAD ACIA ADDRESS
      838/    FAEA : A7 84                     STA    ,X       ; STORE INTO CONTROL REGISTER
-     839/    FAEC : 86 51                     LDA    #$51     ; SET CONTROL
+     839/    FAEC : 86 14                     LDA    #$14     ; SET CONTROL (Tx/Rx interrupt disabled, 8bit 1stop)
      840/    FAEE : A7 84                     STA    ,X       ; REGISTER UP
      841/    FAF0 : 39                 RTS    RTS             ; RETURN TO CALLER
      842/    FAF1 :
@@ -1188,7 +1188,7 @@
     1186/    FCC1 : 26 D1                     BNE    REG4     ; NO, KEEP ON TRUCK'N
     1187/    FCC3 :                    * MOVE STACKED DATA TO NEW STACK IN CASE STACK
     1188/    FCC3 :                    * POINTER HAS CHANGED
-    1189/    FCC3 : 30 8D E2 8A        REGAGN LEAX   TSTACK,PCR ; LOAD TEMP AREA
+    1189/    FCC3 : 30 8D F2 8A        REGAGN LEAX   TSTACK,PCR ; LOAD TEMP AREA
     1190/    FCC7 : C6 15                     LDB    #21      ; LOAD COUNT
     1191/    FCC9 : 35 02              REGTF1 PULS   A        ; NEXT BYTE
     1192/    FCCB : A7 80                     STA    ,X+      ; STORE INTO TEMP
@@ -1223,7 +1223,7 @@
     1221/    FCE1 :                    * BUILD WITH LEADING BLANKS
     1222/    FCE1 : 86 20              BLDNUM LDA    #'       ; ALLOW LEADING BLANKS
     1223/    FCE3 : 97 8E                     STA    DELIM    ; STORE AS DELIMITER
-    1224/    FCE5 : 6E 9D E3 03               JMP    [VECTAB+.EXPAN,PCR] ; TO EXP ANALYZER
+    1224/    FCE5 : 6E 9D F3 03               JMP    [VECTAB+.EXPAN,PCR] ; TO EXP ANALYZER
     1225/    FCE9 :
     1226/    FCE9 :                    * THIS IS THE DEFAULT SINGLE ROM ANALYZER. WE ACCEPT:
     1227/    FCE9 :                    *    1) HEX INPUT
@@ -1484,7 +1484,7 @@
     1482/    FE53 : 10 A3 62                  CMPD   2,S      ; ? WAS IT COUNT
     1483/    FE56 : 23 02                     BLS    CDCNT    ; BRANCH YES
     1484/    FE58 : ED E4                     STD    ,S       ; STORE HIGH ADDRESS
-    1485/    FE5A : AD 9D E1 84        CDCNT  JSR    [VECTAB+.HSDTA,PCR] ; CALL PRINT ROUTINE
+    1485/    FE5A : AD 9D F1 84        CDCNT  JSR    [VECTAB+.HSDTA,PCR] ; CALL PRINT ROUTINE
     1486/    FE5E : 35 E0                     PULS   PC,U,Y   ; CLEAN STACK AND END COMMAND
     1487/    FE60 :
     1488/    FE60 :                    * OBTAIN NUMBER - ABORT IF NONE
@@ -1506,10 +1506,10 @@
     1504/    FE75 : 8D E9                     BSR    CDNUM    ; OBTAIN END ADDRESS
     1505/    FE77 : 6F E2                     CLR    ,-S      ; SETUP PUNCH FUNCTION CODE
     1506/    FE79 : 34 26                     PSHS   Y,D      ; STORE VALUES ON STACK
-    1507/    FE7B : AD 9D E1 65        CCALBS JSR    [VECTAB+.BSON,PCR] ; INITIALIZE HANDLER
-    1508/    FE7F : AD 9D E1 63               JSR    [VECTAB+.BSDAT,PCR] ; PERFORM FUNCTION
+    1507/    FE7B : AD 9D F1 65        CCALBS JSR    [VECTAB+.BSON,PCR] ; INITIALIZE HANDLER
+    1508/    FE7F : AD 9D F1 63               JSR    [VECTAB+.BSDAT,PCR] ; PERFORM FUNCTION
     1509/    FE83 : 34 01                     PSHS   CC       ; SAVE RETURN CODE
-    1510/    FE85 : AD 9D E1 5F               JSR    [VECTAB+.BSOFF,PCR] ; TURN OFF HANDLER
+    1510/    FE85 : AD 9D F1 5F               JSR    [VECTAB+.BSOFF,PCR] ; TURN OFF HANDLER
     1511/    FE89 : 35 01                     PULS   CC       ; OBTAIN CONDITION CODE SAVED
     1512/    FE8B : 26 E1                     BNE    CDBADN   ; BRANCH IF ERROR
     1513/    FE8D : 35 B2                     PULS   PC,Y,X,A ; RETURN FROM COMMAND
@@ -1637,7 +1637,7 @@
     1635/    FF3E : 20 D0                     BRA    CBKDSP   ; AND NOW DISPLAY ALL OF 'EM
     1636/    FF40 :                    * SETUP REGISTERS FOR SCAN
     1637/    FF40 : 9E 9B              CBKSET LDX     NUMBER  ; LOAD VALUE DESIRED
-    1638/    FF42 : 31 8D E0 6C        CBKLDR LEAY    BKPTBL,PCR ; LOAD START OF TABLE
+    1638/    FF42 : 31 8D F0 6C        CBKLDR LEAY    BKPTBL,PCR ; LOAD START OF TABLE
     1639/    FF46 : D6 FA                     LDB     BKPTCT  ; LOAD ENTRY COUNT
     1640/    FF48 : 39                        RTS             ; RETURN
     1641/    FF49 :
@@ -1707,13 +1707,13 @@
     1700/    FFD4 :                    ****************************************************
     1701/    FFD4 :                    *            DEFAULT INTERRUPT TRANSFERS           *
     1702/    FFD4 :                    ****************************************************
-    1703/    FFD4 : 6E 9D DF EE        RSRVD  JMP    [VECTAB+.RSVD,PCR] ; RESERVED VECTOR
-    1704/    FFD8 : 6E 9D DF EC        SWI3   JMP    [VECTAB+.SWI3,PCR] ; SWI3 VECTOR
-    1705/    FFDC : 6E 9D DF EA        SWI2   JMP    [VECTAB+.SWI2,PCR] ; SWI2 VECTOR
-    1706/    FFE0 : 6E 9D DF E8        FIRQ   JMP    [VECTAB+.FIRQ,PCR] ; FIRQ VECTOR
-    1707/    FFE4 : 6E 9D DF E6        IRQ    JMP    [VECTAB+.IRQ,PCR] ; IRQ VECTOR
-    1708/    FFE8 : 6E 9D DF E4        SWI    JMP    [VECTAB+.SWI,PCR] ; SWI VECTOR
-    1709/    FFEC : 6E 9D DF E2        NMI    JMP    [VECTAB+.NMI,PCR] ; NMI VECTOR
+    1703/    FFD4 : 6E 9D EF EE        RSRVD  JMP    [VECTAB+.RSVD,PCR] ; RESERVED VECTOR
+    1704/    FFD8 : 6E 9D EF EC        SWI3   JMP    [VECTAB+.SWI3,PCR] ; SWI3 VECTOR
+    1705/    FFDC : 6E 9D EF EA        SWI2   JMP    [VECTAB+.SWI2,PCR] ; SWI2 VECTOR
+    1706/    FFE0 : 6E 9D EF E8        FIRQ   JMP    [VECTAB+.FIRQ,PCR] ; FIRQ VECTOR
+    1707/    FFE4 : 6E 9D EF E6        IRQ    JMP    [VECTAB+.IRQ,PCR] ; IRQ VECTOR
+    1708/    FFE8 : 6E 9D EF E4        SWI    JMP    [VECTAB+.SWI,PCR] ; SWI VECTOR
+    1709/    FFEC : 6E 9D EF E2        NMI    JMP    [VECTAB+.NMI,PCR] ; NMI VECTOR
     1710/    FFF0 :
     1711/    FFF0 :                    ******************************************************
     1712/    FFF0 :                    *             ASSIST09 HARDWARE VECTOR TABLE
