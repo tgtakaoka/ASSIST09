@@ -21,8 +21,8 @@
       21/       0 : =FFFFE700          RAMOFS EQU    -$1900   ; ROM OFFSET TO RAM WORK PAGE
       22/       0 : =800               ROMSIZ EQU    2048     ; ROM SIZE
       23/       0 : =F000              ROM2OF EQU    ROMBEG-ROMSIZ ; START OF EXTENSION ROM
-      24/       0 : =E008              ACIA   EQU    $E008    ; DEFAULT ACIA ADDRESS
-      25/       0 : =E000              PTM    EQU    $E000    ; DEFAULT PTM ADDRESS
+      24/       0 : =DF00              ACIA   EQU    $DF00    ; DEFAULT ACIA ADDRESS
+      25/       0 : =0                 PTM    EQU    $0000    ; DEFAULT PTM ADDRESS
       26/       0 : =0                 DFTCHP EQU    0        ; DEFAULT CHARACTER PAD COUNT
       27/       0 : =5                 DFTNLP EQU    5        ; DEFAULT NEW LINE PAD COUNT
       28/       0 : =3E                PROMPT EQU    '>       ; PROMPT CHARACTER
@@ -39,12 +39,12 @@
       39/       0 : =10                DLE    EQU    $10      ; DATA LINE ESCAPE
       40/       0 : =18                CAN    EQU    $18      ; CANCEL (CTRL-X)
       41/       0 :                    * PTM ACCESS DEFINITIONS
-      42/       0 : =E001              PTMSTA EQU    PTM+1    ; READ STATUS REGISTER
-      43/       0 : =E000              PTMC13 EQU    PTM      ; CONTROL REGISTER 1 AND 3
-      44/       0 : =E001              PTMC2  EQU    PTM+1    ; CONTROL REGISTER 2
-      45/       0 : =E002              PTMTM1 EQU    PTM+2    ; LATCH 1
-      46/       0 : =E004              PTMTM2 EQU    PTM+4    ; LATCH 2
-      47/       0 : =E006              PTMTM3 EQU    PTM+6    ; LATCH 3
+      42/       0 : =1                 PTMSTA EQU    PTM+1    ; READ STATUS REGISTER
+      43/       0 : =0                 PTMC13 EQU    PTM      ; CONTROL REGISTER 1 AND 3
+      44/       0 : =1                 PTMC2  EQU    PTM+1    ; CONTROL REGISTER 2
+      45/       0 : =2                 PTMTM1 EQU    PTM+2    ; LATCH 1
+      46/       0 : =4                 PTMTM2 EQU    PTM+4    ; LATCH 2
+      47/       0 : =6                 PTMTM3 EQU    PTM+6    ; LATCH 3
       48/       0 :
       49/       0 : =8C                SKIP2  EQU    $8C      ; "CMPX #" OPCODE - SKIPS TWO BYTES
       50/       0 :
@@ -253,10 +253,10 @@
      253/    F86C : 04 7D                     FDB    EXP1-*   ; DEFAULT EXPRESSION ANALYZER
      254/    F86E : 01 2D                     FDB    CMDTB2-* ; DEFAULT SECOND COMMAND TABLE
      255/    F870 :                    * CONSTANTS
-     256/    F870 : E0 08              INTVS  FDB    ACIA     ; DEFAULT ACIA
+     256/    F870 : DF 00              INTVS  FDB    ACIA     ; DEFAULT ACIA
      257/    F872 : 00 05                     FCB    DFTCHP,DFTNLP ; DEFAULT NULL PADDS
      258/    F874 : 00 00                     FDB    0        ; DEFAULT ECHO
-     259/    F876 : E0 00                     FDB    PTM      ; DEFAULT PTM
+     259/    F876 : 00 00                     FDB    PTM      ; DEFAULT PTM
      260/    F878 : 00 00                     FDB    0        ; INITIAL STACK TRACE LEVEL
      261/    F87A : 00                        FCB    0        ; INITIAL BREAKPOINT COUNT
      262/    F87B : 00                        FCB    0        ; SWI BREAKPOINT LEVEL
