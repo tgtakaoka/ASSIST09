@@ -25,7 +25,7 @@ ACIA   EQU    $E008    ; DEFAULT ACIA ADDRESS
 PTM    EQU    $E000    ; DEFAULT PTM ADDRESS
 DFTCHP EQU    0        ; DEFAULT CHARACTER PAD COUNT
 DFTNLP EQU    5        ; DEFAULT NEW LINE PAD COUNT
-PROMPT EQU    '>       ; PROMPT CHARACTER
+PROMPT EQU    '>'      ; PROMPT CHARACTER
 NUMBKP EQU    8        ; NUMBER OF BREAKPOINTS
 ;*********************************************
 
@@ -109,7 +109,7 @@ HIVTR  EQU    52       ; HIGHEST VECTOR OFFSET
 ;* DEFINED HEREIN.
 ;******************************************
 WORKPG EQU    ROMBEG+RAMOFS ; SETUP DIRECT PAGE ADDRESS
-       SETDP  WORKPG>>8 ; NOTIFY ASSEMBLER
+       ASSUME DPR:WORKPG>>8 ; NOTIFY ASSEMBLER
        ORG    WORKPG+256 ; READY PAGE DEFINITIONS
 ;* THE FOLLOWING THRU BKPTOP MUST RESIDE IN THIS ORDER
 ;* FOR PROPER INITIALIZATION
@@ -339,7 +339,7 @@ SWIDNE CLR    SWIBFL   ; CLEAR IN CASE SET
 ;*        A#0 OMIT CONSOLE INIT AND STARTUP MESSAGE
 ;*************************************************
 
-SIGNON FCC    /ASSIST09/ ; SIGNON EYE-CATCHER
+SIGNON FCC    'ASSIST09' ; SIGNON EYE-CATCHER
        FCB    EOT
 
 ZMONTR STS    RSTACK   ; SAVE FOR BAD STACK RECOVERY
@@ -406,17 +406,17 @@ CMDNOL LDX    10,S     ; LOAD USERS PROGRAM COUNTER
 ;* CHECK FOR "QUICK" COMMANDS.
        LBSR   READ     ; OBTAIN FIRST CHARACTER
        LEAX   CDOT+2,PCR ; PRESET FOR SINGLE TRACE
-       CMPA   #'.      ; QUICK TRACE
+       CMPA   #'.'     ; QUICK TRACE
        BEQ    CMDXQT   ; BRANCH EQUAL FOR TRACE ONE
        LEAX   CMPADP+2,PCR ; READY MEMORY ENTRY POINT
-       CMPA   #'/      ; ? OPEN LAST USED MEMORY
+       CMPA   #'/'     ; ? OPEN LAST USED MEMORY
        BEQ    CMDXQT   ; BRANCH TO DO IT IF SO
 ;* PROCESS NEXT CHARACTER
-CMD2   CMPA   #'       ; ? BLANK OR DELIMITER
+CMD2   CMPA   #' '     ; ? BLANK OR DELIMITER
        BLS    CMDGOT   ; BRANCH YES, WE HAVE IT
        PSHS   A        ; BUILD ONTO STACK
        INC    -1,U     ; COUNT THIS CHARACTER
-       CMPA   #'/      ; ? MEMORY COMMAND
+       CMPA   #'/'     ; ? MEMORY COMMAND
        BEQ    CMDMEM   ; BRANCH IF SO
        LBSR   BLDHXC   ; TREAT AS HEX VALUE
        BEQ    CMD3     ; BRANCH IF STILL VALID NUMBER
@@ -499,49 +499,49 @@ CMDTB2 FCB    -2       ; STOP COMMAND SEARCHES
 ;* LIST ENTRY.
 CMDTBL EQU    *        ; MONITOR COMMAND TABLE
        FCB    4
-       FCC    /B/      ; 'BREAKPOINT' COMMAND
+       FCC    'B'      ; 'BREAKPOINT' COMMAND
        FDB    CBKPT-*
        FCB    4
-       FCC    /C/      ; 'CALL' COMMAND
+       FCC    'C'      ; 'CALL' COMMAND
        FDB    CCALL-*
        FCB    4
-       FCC    /D/      ; 'DISPLAY' COMMAND
+       FCC    'D'      ; 'DISPLAY' COMMAND
        FDB    CDISP-*
        FCB    4
-       FCC    /E/      ; 'ENCODE' COMMAND
+       FCC    'E'      ; 'ENCODE' COMMAND
        FDB    CENCDE-*
        FCB    4
-       FCC    /G/      ; 'GO' COMMAND
+       FCC    'G'      ; 'GO' COMMAND
        FDB    CGO-*
        FCB    4
-       FCC    /L/      ; 'LOAD' COMMAND
+       FCC    'L'      ; 'LOAD' COMMAND
        FDB    CLOAD-*
        FCB    4
-       FCC    /M/      ; 'MEMORY' COMMAND
+       FCC    'M'      ; 'MEMORY' COMMAND
        FDB    CMEM-*
        FCB    4
-       FCC    /N/      ; 'NULLS' COMMAND
+       FCC    'N'      ; 'NULLS' COMMAND
        FDB    CNULLS-*
        FCB    4
-       FCC    /O/      ; 'OFFSET' COMMAND
+       FCC    'O'      ; 'OFFSET' COMMAND
        FDB    COFFS-*
        FCB    4
-       FCC    /P/      ; 'PUNCH' COMMAND
+       FCC    'P'      ; 'PUNCH' COMMAND
        FDB    CPUNCH-*
        FCB    4
-       FCC    /R/      ; 'REGISTERS' COMMAND
+       FCC    'R'      ; 'REGISTERS' COMMAND
        FDB    CREG-*
        FCB    4
-       FCC    /S/      ; 'STLEVEL' COMMAND
+       FCC    'S'      ; 'STLEVEL' COMMAND
        FDB    CSTLEV-*
        FCB    4
-       FCC    /T/      ; 'TRACE' COMMAND
+       FCC    'T'      ; 'TRACE' COMMAND
        FDB    CTRACE-*
        FCB    4
-       FCC    /V/      ; 'VERIFY' COMMAND
+       FCC    'V'      ; 'VERIFY' COMMAND
        FDB    CVER-*
        FCB    4
-       FCC    /W/      ; 'WINDOW' COMMAND
+       FCC    'W'      ; 'WINDOW' COMMAND
        FDB    CWINDO-*
        FCB    -1       ; END, CONTINUE WITH THE SECOND
 
@@ -578,7 +578,7 @@ ZOT2HS BSR    ZOUT2H   ; CONVERT BYTE TO HEX
 ;* INPUT: NONE
 ;* OUTPUT: BLANK SEND TO CONSOLE HANDLER
 ;*************************************************
-ZSPACE LDA    #'       ; LOAD BLANK
+ZSPACE LDA    #' '     ; LOAD BLANK
        BRA    ZOTCH2   ; SEND AND RETURN
 
 ;***************************************************
@@ -735,7 +735,7 @@ XQCIDT JSR    [VECTAB+_CIDTA,PCR] ; TO INPUT ROUTINE
 ;*  A CTL-X IS ENTERED FROM THE INPUT CONSOLE DEVICE.
 ;*********************************************
 
-MSHOWP FCB    'O,'P,'-,EOT ; OPCODE PREP
+MSHOWP FCB    'O','P','-',EOT ; OPCODE PREP
 
 NMIR   BSR    LDDP     ; LOAD PAGE AND VERIFY STACK
        TST    MISFLG   ; ? THRU A BREAKPOINT
@@ -779,7 +779,7 @@ RTI    RTI             ; AND CONTINUE USERS PROGRAM
 ;* INPUT: FULLY STACKED REGISTERS FROM AN INTERRUPT
 ;* OUTPUT: DPR LOADED TO WORK PAGE
 
-ERRMSG FCB    '?,BELL,$20,EOT ; ERROR RESPONSE
+ERRMSG FCB    '?',BELL,$20,EOT ; ERROR RESPONSE
 
 LDDP   LDB    BASEPG,PCR ; LOAD DIRECT PAGE HIGH BYTE
        TFR    B,DP     ; SETUP DIRECT PAGE REGISTER
@@ -918,13 +918,13 @@ BSDAT  LDU    2,S      ; U=TO ADDRESS OR OFFSET
        LEAS   -3,S     ; ROOM FOR WORK/COUNTER/CHECKSUM
 BSDLD1 SWI             ; GET NEXT CHARACTER
        FCB    INCHNP   ; FUNCTION
-BSDLD2 CMPA   #'S      ; ? START OF S1/S9
+BSDLD2 CMPA   #'S'     ; ? START OF S1/S9
        BNE    BSDLD1   ; BRANCH NOT
        SWI             ; GET NEXT CHARACTER
        FCB    INCHNP   ; FUNCTION
-       CMPA   #'9      ; ? HAVE S9
+       CMPA   #'9'     ; ? HAVE S9
        BEQ    BSDSRT   ; YES, RETURN GOOD CODE
-       CMPA   #'1      ; ? HAVE NEW RECORD
+       CMPA   #'1'     ; ? HAVE NEW RECORD
        BNE    BSDLD2   ; BRANCH IF NOT
        CLR    ,S       ; CLEAR CHECKSUM
        BSR    BYTE     ; OBTAIN BYTE COUNT
@@ -1029,8 +1029,8 @@ BSPMRE BSR    BSPUN2   ; SENT OUT NEXT BYTE
 BSPUN2 ADDB   ,X       ; ADD TO CHECKSUM
 BSPUNC LBRA   ZOUT2H   ; SEND OUT AS HEX AND RETURN
 
-BSPSTR FCB    'S,'1,EOT ; CR,LF,NULLS,S,1
-BSPEOF FCC    /S9030000FC/ ; EOF STRING
+BSPSTR FCB    'S','1',EOT ; CR,LF,NULLS,S,1
+BSPEOF FCC    'S9030000FC' ; EOF STRING
        FCB    CR,LF,EOT
 
 ;* HSDTA - HIGH SPEED PRINT MEMORY
@@ -1075,9 +1075,9 @@ HSHNXT SWI             ; CONVERT BYTE TO HEX AND SEND
        LDB    #16      ; COUNT
 HSHCHR LDA    ,X+      ; NEXT BYTE
        BMI    HSHDOT   ; TOO LARGE, TO A DOT
-       CMPA   #'       ; ? LOWER THAN A BLANK
+       CMPA   #' '     ; ? LOWER THAN A BLANK
        BHS    HSHCOK   ; NO, SHOW CHARACTER
-HSHDOT LDA    #'.      ; CONVERT INVALID TO A BLANK
+HSHDOT LDA    #'.'     ; CONVERT INVALID TO A BLANK
 HSHCOK SWI             ; SEND CHARACTER
        FCB    OUTCH    ; FUNCTION
        DECB            ; ? DONE
@@ -1120,15 +1120,15 @@ CREG   BSR    REGPRT   ; PRINT REGISTERS
 ;* VOLATILE: D,X (CHANGE)
 ;*           B,X (DISPLAY)
 ;********************************************
-REGMSK FCB    'P,'C,-1,19 ; PC REG
-       FCB    'A,0,10  ; A REG
-       FCB    'B,0,11  ; B REG
-       FCB    'X,-1,13 ; X REG
-       FCB    'Y,-1,15 ; Y REG
-       FCB    'U,-1,17 ; U REG
-       FCB    'S,-1,1  ; S REG
-       FCB    'C,'C,0,9 ; CC REG
-       FCB    'D,'P,0,12 ; DP REG
+REGMSK FCB    'P','C',-1,19 ; PC REG
+       FCB    'A',0,10  ; A REG
+       FCB    'B',0,11  ; B REG
+       FCB    'X',-1,13 ; X REG
+       FCB    'Y',-1,15 ; Y REG
+       FCB    'U',-1,17 ; U REG
+       FCB    'S',-1,1  ; S REG
+       FCB    'C','C',0,9 ; CC REG
+       FCB    'D','P',0,12 ; DP REG
        FCB    0        ; END OF LIST
 
 REGPRT CLRA            ; SETUP PRINT ONLY FLAG
@@ -1141,7 +1141,7 @@ REGP1  LDD    ,Y+      ; LOAD NEXT CHAR OR <=0
        SWI             ; SEND TO CONSOLE
        FCB    OUTCH    ; FUNCTION BYTE
        BRA    REGP1    ; CHECK NEXT
-REGP2  LDA    #'-      ; READY '-'
+REGP2  LDA    #'-'     ; READY '-'
        SWI             ; SEND OUT
        FCB    OUTCH    ; WITH OUTCH
        LEAX   B,S      ; X->REGISTER TO PRINT
@@ -1219,7 +1219,7 @@ REGTF2 LDA    ,-X      ; NEXT TO STORE
 BLDNNB CLRA            ; NO DYNAMIC DELIMITER
        FCB    SKIP2    ; SKIP NEXT INSTRUCTION
 ;* BUILD WITH LEADING BLANKS
-BLDNUM LDA    #'       ; ALLOW LEADING BLANKS
+BLDNUM LDA    #' '     ; ALLOW LEADING BLANKS
        STA    DELIM    ; STORE AS DELIMITER
        JMP    [VECTAB+_EXPAN,PCR] ; TO EXP ANALYZER
 
@@ -1237,13 +1237,13 @@ EXPDLM BSR    BLDHXI   ; CLEAR NUMBER, CHECK FIRST CHAR
        BEQ    EXPDLM   ; YES, IGNORE IT
 ;* TEST FOR M OR P
        LDX    ADDR     ; DEFAULT FOR 'M'
-       CMPA   #'M      ; ? MEMORY EXAMINE ADDR WANTED
+       CMPA   #'M'     ; ? MEMORY EXAMINE ADDR WANTED
        BEQ    EXPTDL   ; BRANCH IF SO
        LDX    PCNTER   ; DEFAULT FOR 'P'
-       CMPA   #'P      ; ? LAST PROGRAM COUNTER WANTED
+       CMPA   #'P'     ; ? LAST PROGRAM COUNTER WANTED
        BEQ    EXPTDL   ; BRANCH IF SO
        LDX    WINDOW   ; DEFAULT TO WINDOW
-       CMPA   #'W      ; ? WINDOW WANTED
+       CMPA   #'W'     ; ? WINDOW WANTED
        BEQ    EXPTDL
 EXPRTN PULS   PC,X,B   ; RETURN AND RESTORE REGISTERS
 ;* GOT HEX, NOW CONTINUE BUILDING
@@ -1258,7 +1258,7 @@ EXPTDL STX    NUMBER   ; STORE RESULT
        BSR    READ     ; OBTAIN NEXT CHARACTER
 ;* TEST FOR + OR -
 EXPCDL LDX    NUMBER   ; LOAD LAST VALUE
-       CMPA   #'+      ; ? ADD OPERATOR
+       CMPA   #'+'     ; ? ADD OPERATOR
        BNE    EXPCHM   ; BRANCH NOT
        BSR    EXPTRM   ; COMPUTE NEXT TERM
        PSHS   A        ; SAVE DELIMITER
@@ -1267,9 +1267,9 @@ EXPADD LEAX   D,X      ; ADD TO X
        STX    NUMBER   ; STORE AS NEW RESULT
        PULS   A        ; RESTORE DELIMITER
        BRA    EXPCDL   ; NOW TEST IT
-EXPCHM CMPA   #'-      ; SUBTRACT OPERATOR
+EXPCHM CMPA   #'-'     ; SUBTRACT OPERATOR
        BEQ    EXPSUB   ; BRANCH IF SO
-       CMPA   #'@      ; ? INDIRECTION DESIRED
+       CMPA   #'@'     ; ? INDIRECTION DESIRED
        BEQ    EXPTDI   ; BRANCH IF SO
        CLRB            ; SET DELIMITER RETURN
        BRA    EXPRTN   ; AND RETURN TO CALLER
@@ -1319,13 +1319,13 @@ BLDSHF ASLB            ; OBTAIN NEXT BIT
 ;* ALL REGISTERS TRANSPARENT
 ;* (A UNALTERED IF INVALID HEX)
 ;**************************************
-CNVHEX CMPA   #'0      ; ? LOWER THAN A ZERO
+CNVHEX CMPA   #'0'     ; ? LOWER THAN A ZERO
        BLO    CNVRTS   ; BRANCH NOT VALUE
-       CMPA   #'9      ; ? POSSIBLE A-F
+       CMPA   #'9'     ; ? POSSIBLE A-F
        BLE    CNVGOT   ; BRANCH NO TO ACCEPT
-       CMPA   #'A      ; ? LESS THAN TEN
+       CMPA   #'A'     ; ? LESS THAN TEN
        BLO    CNVRTS   ; RETURN IF MINUS (INVALID)
-       CMPA   #'F      ; ? NOT TOO LARGE
+       CMPA   #'F'     ; ? NOT TOO LARGE
        BHI    CNVRTS   ; NO, RETURN TOO LARGE
        SUBA   #7       ; DOWN TO BINARY
 CNVGOT ANDA   #$0F     ; CLEAR HIGH HEX
@@ -1391,26 +1391,26 @@ CMEM   LBSR   CDNUM    ; OBTAIN ADDRESS
 CMEMN  STD    ADDR     ; STORE DEFAULT
 CMEM2  LDX    ADDR     ; LOAD POINTER
        LBSR   ZOUT2H   ; SEND OUT HEX VALUE OF BYTE
-       LDA    #'-      ; LOAD DELIMITER
+       LDA    #'-'     ; LOAD DELIMITER
        SWI             ; SEND OUT
        FCB    OUTCH    ; FUNCTION
 CMEM4  LBSR   BLDNNB   ; OBTAIN NEW BYTE VALUE
        BEQ    CMENUM   ; BRANCH IF NUMBER
 ;* COMMA - SKIP BYTE
-       CMPA   #',      ; ? COMMA
+       CMPA   #','     ; ? COMMA
        BNE    CMNOTC   ; BRANCH NOT
        STX    ADDR     ; UPDATE POINTER
        LEAX   1,X      ; TO NEXT BYTE
        BRA    CMEM4    ; AND INPUT IT
 CMENUM LDB    NUMBER+1 ; LOAD LOW BYTE VALUE
        BSR    MUPDAT   ; GO OVERLAY MEMORY BYTE
-       CMPA   #',      ; ? CONTINUE WITH NO DISPLAY
+       CMPA   #','     ; ? CONTINUE WITH NO DISPLAY
        BEQ    CMEM4    ; BRANCH YES
 ;*  QUOTED STRING
-CMNOTC CMPA   #''      ; ? QUOTED STRING
+CMNOTC CMPA   #'\''    ; ? QUOTED STRING
        BNE    CMNOTQ   ; BRANCH NO
 CMESTR BSR    READ     ; OBTAIN NEXT CHARACTER
-       CMPA   #''      ; ? END OF QUOTED STRING
+       CMPA   #'\''    ; ? END OF QUOTED STRING
        BEQ    CMSPCE   ; YES, QUIT STRING MODE
        TFR    A,B      ; TO B FOR SUBROUTINE
        BSR    MUPDAT   ; GO UPDATE BYTE
@@ -1431,7 +1431,7 @@ CMNOTB CMPA   #LF      ; LINE FEED FOR NEXT BYTE
        STX    ADDR     ; STORE NEXT ADDRESS
        BRA    CMPADP   ; BRANCH TO SHOW
 ;* UP ARROW - PREVIOUS BYTE AND ADDRESS
-CMNOTL CMPA   #'^      ; UP ARROW FOR PREVIOUS BYTE
+CMNOTL CMPA   #'^'     ; UP ARROW FOR PREVIOUS BYTE
        BNE    CMNOTU   ; BRANCH NOT
        LEAX   -2,X     ; DOWN TO PREVIOUS BYTE
        STX    ADDR     ; STORE NEW POINTER
@@ -1440,7 +1440,7 @@ CMPADS SWI             ; FORCE NEW LINE
 CMPADP BSR    PRTADR   ; GO PRINT ITS VALUE
        BRA    CMEM2    ; THEN PROMPT FOR INPUT
 ;* SLASH - NEXT BYTE WITH ADDRESS
-CMNOTU CMPA   #'/      ; ? SLASH FOR CURRENT DISPLAY
+CMNOTU CMPA   #'/'     ; ? SLASH FOR CURRENT DISPLAY
        BEQ    CMPADS   ; YES, SEND ADDRESS
        RTS             ; RETURN FROM COMMAND
 
@@ -1460,7 +1460,7 @@ MUPDAT LDX    ADDR     ; LOAD POINTER VALUE
        STX    ADDR     ; STORE NEW POINTER VALUE
        RTS             ; BACK TO CALLER
 MUPBAD PSHS   A        ; SAVE A REGISTER
-       LDA    #'?      ; SHOW INVALID
+       LDA    #'?'     ; SHOW INVALID
        SWI             ; SEND OUT
        FCB    OUTCH    ; FUNCTION
        PULS   PC,A     ; RETURN TO CALLER
@@ -1491,7 +1491,7 @@ CDCNT  JSR    [VECTAB+_HSDTA,PCR] ; CALL PRINT ROUTINE
 ;*                                  ELSE C=0
 CDNUM  LBSR   BLDNUM   ; OBTAIN NUMBER
        BNE    CDBADN   ; BRANCH IF INVALID
-       CMPA   #'/      ; ? VALID DELIMITER
+       CMPA   #'/'     ; ? VALID DELIMITER
        BHI    CDBADN   ; BRANCH IF NOT FOR ERROR
        CMPA   #CR+1    ; LEAVE COMPARE FOR CARRIAGE RETURN
        LDD    NUMBER   ; LOAD NUMBER
@@ -1587,7 +1587,7 @@ COFNO1 LDU    ,S       ; RELOAD OFFSET
 CBKPT  BEQ    CBKDSP   ; BRANCH DISPLAY OF JUST 'B'
        LBSR   BLDNUM   ; ATTEMPT VALUE ENTRY
        BEQ    CBKADD   ; BRANCH TO ADD IF SO
-       CMPA   #'-      ; ? CORRECT DELIMITER
+       CMPA   #'-'     ; ? CORRECT DELIMITER
        BNE    CBKERR   ; NO, BRANCH FOR ERROR
        LBSR   BLDNUM   ; ATTEMPT DELETE VALUE
        BEQ    CBKDLE   ; GOT ONE, GO DELETE IT
@@ -1645,7 +1645,7 @@ CENCDE CLR    ,-S      ; DEFAULT TO NOT INDIRECT
        LEAX   <CONV1,PCR ; START TABLE SEARCH
        SWI             ; OBTAIN FIRST CHARACTER
        FCB    INCHNP   ; FUNCTION
-       CMPA   #'[      ; ? INDIRECT HERE
+       CMPA   #'['     ; ? INDIRECT HERE
        BNE    CEN2     ; BRANCH IF NOT
        LDA    #$10     ; SET INDIRECT BUT ON
        STA    ,S       ; SAVE FOR LATER
@@ -1680,11 +1680,11 @@ CENLP2 TST    ,X       ; ? END OF TABLE
        PULS   B,PC     ; END OF COMMAND
 
 ;* TABLE ONE DEFINES VALID INPUT IN SEQUENCE
-CONV1  FCB    'A,$04,'B,$05,'D,$06,'H,$01
-       FCB    'H,$01,'H,$01,'H,$00,',,$00
-       FCB    '-,$09,'-,$01,'S,$70,'Y,$30
-       FCB    'U,$50,'X,$10,'+,$07,'+,$01
-       FCB    'P,$80,'C,$00,'R,$00,'],$00
+CONV1  FCB    'A',$04,'B',$05,'D',$06,'H',$01
+       FCB    'H',$01,'H',$01,'H',$00,',',$00
+       FCB    '-',$09,'-',$01,'S',$70,'Y',$30
+       FCB    'U',$50,'X',$10,'+',$07,'+',$01
+       FCB    'P',$80,'C',$00,'R',$00,']',$00
        FCB    $FF      ; END OF TABLE
 ;*CONV2 USES ABOVE CONVERSION TO SET POSTBYTE
 ;*                             BIT SKELETON.
