@@ -1,4 +1,4 @@
-;      TTL     ASSIST09 - MC6809 MONITOR
+       TITLE   "ASSIST09 - MC6809 MONITOR"
 ;      OPT     ABS,LLE=85,S,CRE
 
 ;*************************************
